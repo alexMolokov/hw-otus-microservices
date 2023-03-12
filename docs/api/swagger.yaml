@@ -1,0 +1,27 @@
+basePath: /
+definitions:
+  model.StatusResponse:
+    properties:
+      status:
+        example: OK
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Описание API методов
+  title: Microservices Otus Service (Курс микросервисы Otus)
+  version: "1.0"
+paths:
+  /health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сервис работает корректно
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: Проверка здоровья сервиса
+      tags:
+      - system
+swagger: "2.0"
