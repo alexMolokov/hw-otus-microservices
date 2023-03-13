@@ -1,0 +1,6 @@
+bin
+dist
+log
+.idea
+req.http
+.env
