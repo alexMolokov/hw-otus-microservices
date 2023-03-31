@@ -24,4 +24,20 @@ paths:
       summary: Проверка здоровья сервиса
       tags:
       - system
+  /ready:
+    get:
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Сервис может принимать трафик
+          schema:
+            type: string
+        "503":
+          description: Сервис не может принимать трафик
+          schema:
+            type: string
+      summary: Проверка сервиса принимать трафик
+      tags:
+      - system
 swagger: "2.0"

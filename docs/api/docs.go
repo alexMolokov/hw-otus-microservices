@@ -34,6 +34,31 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/ready": {
+            "get": {
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Проверка сервиса принимать трафик",
+                "responses": {
+                    "200": {
+                        "description": "Сервис может принимать трафик",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "503": {
+                        "description": "Сервис не может принимать трафик",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

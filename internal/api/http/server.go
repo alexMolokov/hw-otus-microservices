@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/alexMolokov/hw-otus-microservices/internal/logger"
+	fasthttpprom "github.com/carousell/fasthttp-prometheus-middleware"
 	"github.com/valyala/fasthttp"
 )
 
@@ -33,6 +34,9 @@ func NewServer(logger logger.Logger, app Application, addr string) *Server {
 	}
 
 	router := s.NewRouter()
+	p := fasthttpprom.NewPrometheus("otus-microservice")
+	p.Use(router)
+
 	s.httpServer = &fasthttp.Server{
 		Handler:      router.Handler,
 		ReadTimeout:  10 * time.Second,
