@@ -13,6 +13,7 @@ import (
 	"github.com/alexMolokov/hw-otus-microservices/internal/api/config"
 	internalhttp "github.com/alexMolokov/hw-otus-microservices/internal/api/http"
 	logger2 "github.com/alexMolokov/hw-otus-microservices/internal/logger"
+	"github.com/alexMolokov/hw-otus-microservices/internal/logger/zap"
 )
 
 var configFile string
@@ -39,7 +40,7 @@ func main() {
 		log.Fatalf("Can't load config: %#v", err)
 	}
 
-	logger, err := logger2.New(cfg.Logger)
+	logger, err := zap.InitLogger(cfg.Logger)
 	if err != nil {
 		log.Fatalf("Can't init logger: %#v", err)
 	}
@@ -52,9 +53,9 @@ func main() {
 	defer cancel()
 
 	go func() {
-		logger.Info("otus-microservices api is running...")
+		logger.Info("otus-microservices api is running...", logger2.Context{})
 		if err := server.Start(); err != nil {
-			logger.Error("failed to start http server", logger2.ErrorContext(err))
+			logger.Error("failed to start otus-microservices api", logger2.ErrorContext(err))
 			cancel()
 			os.Exit(1)
 		}

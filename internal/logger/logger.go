@@ -1,65 +1,56 @@
 package logger
 
 import (
-	"github.com/alexMolokov/hw-otus-microservices/internal/api/config"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"encoding/json"
 )
 
+// Logger базовый интерфейс логера.
 type Logger interface {
-	Debug(msg string, args ...interface{})
-	Info(msg string, args ...interface{})
-	Warning(msg string, args ...interface{})
-	Error(msg string, args ...interface{})
+	Debug(v ...interface{})
+	Info(v ...interface{})
+	Warning(v ...interface{})
+	Error(v ...interface{})
+	Critical(v ...interface{})
+	Fatal(v ...interface{})
 }
 
-type ZLogger struct {
-	zp *zap.SugaredLogger
+// CallerSkiper интерфейс для игнорироавния колстека.
+type CallerSkiper interface {
+	WithCallerSkip(int) Logger
 }
 
-func getLevel(level string) zapcore.Level {
-	switch level {
-	case "debug":
-		return zapcore.DebugLevel
-	case "warn":
-		return zapcore.WarnLevel
-	case "error":
-		return zapcore.ErrorLevel
-	default:
-		return zapcore.InfoLevel
+// FatalSkiper интерфейс который позволяет получить логгер с игнорированием завершения программы при фатальной ошибке.
+type FatalSkiper interface {
+	WithIgnoreFatal() Logger
+}
+
+// Releaser интерфейс который позволяет получить логгер с информацией о релизе.
+type Releaser interface {
+	WithRelease(string) Logger
+}
+
+// Requester интерфейс который позволяет получить логгер с информацией о запросе.
+type Requester interface {
+	WithRequestID(string) Logger
+}
+
+// Context контекст логирования.
+type Context map[string]interface{}
+
+// Message сообщение с контекстом.
+type Message struct {
+	Message string  `json:"message"`
+	Context Context `json:"context"`
+}
+
+// String преобразует структуру в строчное представление.
+func (m *Message) String() string {
+	if m.Context == nil {
+		return m.Message
 	}
-}
-
-func New(c config.LoggerConf) (*ZLogger, error) {
-	cfg := zap.NewProductionConfig()
-
-	cfg.Level = zap.NewAtomicLevelAt(getLevel(c.Level))
-	cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05 -0700")
-
-	loggerZap, err := cfg.Build()
+	data, err := json.Marshal(&m.Context)
 	if err != nil {
-		return nil, err
+		return m.Message
 	}
-
-	logger := &ZLogger{
-		zp: loggerZap.Sugar(),
-	}
-
-	return logger, nil
-}
-
-func (l *ZLogger) Debug(msg string, args ...interface{}) {
-	l.zp.Debugf(msg, args...)
-}
-
-func (l *ZLogger) Info(msg string, args ...interface{}) {
-	l.zp.Infof(msg, args...)
-}
-
-func (l *ZLogger) Warning(msg string, args ...interface{}) {
-	l.zp.Warnf(msg, args...)
-}
-
-func (l *ZLogger) Error(msg string, args ...interface{}) {
-	l.zp.Errorf(msg, args...)
+	return m.Message + " | " + string(data)
 }
