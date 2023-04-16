@@ -4,11 +4,11 @@ kind: Service
 metadata:
   name: alexmolokov-service
   labels:
-    app: alexmolokov-otus-hw03
+    app: alexmolokov-otus
 spec:
   type: ClusterIP
   selector:
-    app: alexmolokov-otus-hw03
+    app: alexmolokov-otus
   ports:
     - port: 80
       targetPort: 8000

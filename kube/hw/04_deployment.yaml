@@ -2,14 +2,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: otus-hw3-deployment
+  name: otus-hw-deployment
   labels:
-    app: alexmolokov-otus-hw03
+    app: alexmolokov-otus
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: alexmolokov-otus-hw03
+      app: alexmolokov-otus
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -17,11 +17,11 @@ spec:
   template:
     metadata:
       labels:
-        app: alexmolokov-otus-hw03
+        app: alexmolokov-otus
     spec:
       containers:
-        - name: otus-hw3
-          image: alexmolokov1311/otus-microservices:0.0.2
+        - name: otus-hw
+          image: alexmolokov1311/otus-microservices:0.0.4
           ports:
             - containerPort: 8000
           readinessProbe:
@@ -54,4 +54,9 @@ spec:
             limits:
               cpu: 100m
               memory: 100Mi
+          envFrom:
+            - configMapRef:
+                name: postgres-configmap-env
+            -  secretRef:
+                name: postgres-secret-env
 ...

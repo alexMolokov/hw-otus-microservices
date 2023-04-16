@@ -1,9 +1,105 @@
 basePath: /
 definitions:
+  internalhttp.ResponseError:
+    properties:
+      error:
+        example: true
+        type: boolean
+      message:
+        example: Some error message
+        type: string
+    type: object
+  internalhttp.ResponseErrors:
+    properties:
+      error:
+        example: true
+        type: boolean
+      errors:
+        items: {}
+        type: array
+    type: object
+  internalhttp.ResponseOk:
+    properties:
+      error:
+        example: false
+        type: boolean
+      message:
+        example: Ok
+        type: string
+    type: object
   model.StatusResponse:
     properties:
       status:
         example: OK
+        type: string
+    type: object
+  model.User:
+    properties:
+      email:
+        example: alex.molokov@yandex.ru
+        type: string
+      firstName:
+        example: Молоков
+        type: string
+      id:
+        example: 1
+        type: integer
+      lastName:
+        example: Алексей
+        type: string
+      phone:
+        example: "+79035431754"
+        type: string
+      username:
+        example: alex.molokov
+        type: string
+    type: object
+  model.UserCreateRequest:
+    properties:
+      email:
+        example: alex.molokov@yandex.ru
+        type: string
+      firstName:
+        example: Молоков
+        type: string
+      lastName:
+        example: Алексей
+        type: string
+      phone:
+        example: "+79035431754"
+        type: string
+      username:
+        example: alex.molokov
+        type: string
+    type: object
+  model.UserCreateResponse:
+    properties:
+      error:
+        example: false
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      message:
+        example: OK
+        type: string
+    type: object
+  model.UserUpdateRequest:
+    properties:
+      email:
+        example: alex.molokov@yandex.ru
+        type: string
+      firstName:
+        example: Молоков
+        type: string
+      id:
+        example: 1
+        type: integer
+      lastName:
+        example: Алексей
+        type: string
+      phone:
+        example: "+79035431754"
         type: string
     type: object
 info:
@@ -12,6 +108,130 @@ info:
   title: Microservices Otus Service (Курс микросервисы Otus)
   version: "1.0"
 paths:
+  /api/v1/user:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Запрос на создание
+        in: body
+        name: _
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserCreateResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseErrors'
+        "500":
+          description: Some error
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseError'
+      summary: Создание пользователя.
+      tags:
+      - v1
+  /api/v1/user/{id}:
+    delete:
+      parameters:
+      - description: ID пользователя
+        example: 1
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseOk'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseError'
+        "500":
+          description: Some error
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseError'
+      summary: Удаление пользователя по ID
+      tags:
+      - v1
+    get:
+      parameters:
+      - description: ID пользователя
+        example: 1
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseError'
+        "500":
+          description: Some error
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseError'
+      summary: Получение пользователя по ID
+      tags:
+      - v1
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID пользователя
+        example: 1
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Запрос на изменение данных
+        in: body
+        name: _
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: OK
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseOk'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseErrors'
+        "500":
+          description: Some error
+          schema:
+            $ref: '#/definitions/internalhttp.ResponseError'
+      summary: Изменение пользователя.
+      tags:
+      - v1
   /health:
     get:
       produces:

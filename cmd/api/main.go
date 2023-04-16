@@ -12,6 +12,7 @@ import (
 	"github.com/alexMolokov/hw-otus-microservices/internal/api/app"
 	"github.com/alexMolokov/hw-otus-microservices/internal/api/config"
 	internalhttp "github.com/alexMolokov/hw-otus-microservices/internal/api/http"
+	"github.com/alexMolokov/hw-otus-microservices/internal/db"
 	logger2 "github.com/alexMolokov/hw-otus-microservices/internal/logger"
 	"github.com/alexMolokov/hw-otus-microservices/internal/logger/zap"
 )
@@ -45,7 +46,16 @@ func main() {
 		log.Fatalf("Can't init logger: %#v", err)
 	}
 
-	application := app.NewApp(cfg, logger)
+	conn, err := db.NewConnection(cfg.DB)
+	if err != nil {
+		log.Fatalf("Can't connect to db: %#v", err)
+	}
+	defer func() {
+		_ = conn.Close()
+	}()
+
+	appStorage := db.NewAppStorage(conn)
+	application := app.NewApp(cfg, logger, appStorage)
 	server := internalhttp.NewServer(logger, application, fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port))
 
 	ctx, cancel := signal.NotifyContext(context.Background(),

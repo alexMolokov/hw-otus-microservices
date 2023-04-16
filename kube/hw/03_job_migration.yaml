@@ -1,0 +1,21 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: otus-migration-dev-0.0.3
+  labels:
+    app: alexmolokov-otus
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 60
+  template:
+    spec:
+      containers:
+        - name: otus-migration
+          image: alexmolokov1311/otus-ms-migration:0.0.3
+          envFrom:
+            - configMapRef:
+                name: postgres-configmap-env
+            - secretRef:
+                name: postgres-secret-env
+      restartPolicy: Never
