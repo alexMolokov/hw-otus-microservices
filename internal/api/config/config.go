@@ -13,3 +13,16 @@ type HTTPConf struct {
 	Host string `config:"api-http-host"`
 	Port int    `config:"api-http-port"`
 }
+
+type DBConf struct {
+	Host         string `config:"db-host"`
+	Port         int    `config:"db-port"`
+	Name         string `config:"db-name"`
+	User         string `config:"db-user"`
+	Password     string `config:"db-password"`
+	SslMode      string `config:"db-ssl"`
+	BinaryParams string `config:"db-binary-params"`
+	MaxOpenConn  int    `config:"db-max-open-conn"`
+	MaxIdleConn  int    `config:"db-max-idle-conn"`
+	MaxLifetime  int    `config:"db-max-life-time"`
+}

@@ -6,7 +6,6 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-/*
 func GetErrorLoggerContext(ctx *fasthttp.RequestCtx, err error, m map[string]interface{}) logger.Context {
 	contextError := GetLoggerContext(ctx, m)
 	if err == nil {
@@ -15,7 +14,7 @@ func GetErrorLoggerContext(ctx *fasthttp.RequestCtx, err error, m map[string]int
 	}
 	contextError["error"] = err.Error()
 	return contextError
-}*/
+}
 
 func GetLoggerContext(ctx *fasthttp.RequestCtx, m map[string]interface{}) logger.Context {
 	uv, ok := ctx.Value(model.UserCtxKey).(model.UserContext)

@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configmap-env
+  labels:
+    app: alexmolokov-otus
+data:
+  DB_HOST: "postgresql"
+  DB_PORT: "5432"
+  DB_USER: "alex.molokov"
+  DB_NAME: "otus"
+  DB_SSL: "disable"
+...

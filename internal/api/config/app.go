@@ -12,6 +12,7 @@ import (
 type AppConfig struct {
 	Logger LoggerConf
 	HTTP   HTTPConf
+	DB     DBConf
 }
 
 func NewAppConfig(fileName string) (*AppConfig, error) {
