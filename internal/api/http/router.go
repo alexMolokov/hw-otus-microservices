@@ -18,5 +18,6 @@ func (s *Server) NewRouter() *router.Router {
 	r.PUT("/api/v1/user/{id}", s.UserUpdate)
 
 	r.GET("/swagger/{filepath:*}", fasthttpadaptor.NewFastHTTPHandlerFunc(httpSwagger.WrapHandler))
+	r.GET("/sometimes/error", s.SometimesError)
 	return r
 }

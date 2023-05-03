@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/alexMolokov/hw-otus-microservices/internal/api/app"
 	"github.com/alexMolokov/hw-otus-microservices/internal/common"
@@ -78,7 +80,6 @@ func (s *Server) UserCreate(ctx *fasthttp.RequestCtx) {
 		}))
 	response := newInternalError(ctx)
 	response.Data(NewResponseError("Can't create user"))
-
 }
 
 // UserUpdate ...
@@ -244,6 +245,22 @@ func (s *Server) UserDelete(ctx *fasthttp.RequestCtx) {
 		}))
 	response := newInternalError(ctx)
 	response.Data(NewResponseError(fmt.Sprintf("Can't delete user by id = %d", id)))
+}
+
+func (s *Server) SometimesError(ctx *fasthttp.RequestCtx) {
+	rand.Seed(time.Now().UnixNano())
+	tm := rand.Intn(100) // nolint
+	switch tm % 5 {
+	case 0:
+		response := newInternalError(ctx)
+		response.Data(NewResponseError("Generated 500"))
+	case 4:
+		response := newBadRequest(ctx)
+		response.Data(NewResponseError("Generated 400"))
+	default:
+		response := newOk(ctx)
+		response.Text("Ok")
+	}
 }
 
 // Ready ...

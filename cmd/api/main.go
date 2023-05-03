@@ -46,7 +46,7 @@ func main() {
 		log.Fatalf("Can't init logger: %#v", err)
 	}
 
-	conn, err := db.NewConnection(cfg.DB)
+	conn, _ := db.NewConnection(cfg.DB)
 	if err != nil {
 		log.Fatalf("Can't connect to db: %#v", err)
 	}

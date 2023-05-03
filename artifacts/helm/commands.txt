@@ -1,0 +1,18 @@
+helm template . - распечатать шаблоны в виде как они пойдут в kubernetes
+helm template . --name-template=foobar - передать имя релиза
+helm template . --set image.tag=1.13 - переопределить номер тега (можно использовать при install)
+
+
+
+helm get manifest имя_релиза
+helm install --debug --dry-run имя_релиза ./mychart
+
+Prometheus
+https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack (+grafana)
+
+// пробросить порт локальную машину для сервиса prometheus-operated (UI)
+kubectl port-forward service/prometheus-operated 9090 --namespace=alexmolokov
+открыть UI
+http://localhost:9090
+
+kubectl port-forward service/otususer-grafana 9091:80 --namespace=alexmolokov

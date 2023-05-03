@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}-{{ .Release.Name }}
+{{- if .Values.annotations }}
+  annotations:
+{{ toYaml .Values.annotations | indent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.replicas | default 2 }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-{{ .Release.Name }}
+  strategy:
+{{ toYaml .Values.strategy | indent 4}}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-{{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion}}"
+          ports:
+            - containerPort: {{ .Values.port }}
+          {{- if .Values.probes.readiness}}
+          {{- with .Values.probes.readiness }}
+          readinessProbe:
+            failureThreshold: {{ .failureThreshold | default 3 }}
+            httpGet:
+              path: {{ .path }}
+              port: {{ $.Values.port }}
+            periodSeconds: {{ .periodSeconds | default 10 }}
+            successThreshold: {{ .successThreshold | default 1 }}
+            timeoutSeconds: {{ .timeoutSeconds | default 1 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.probes.liveness }}
+          {{- with .Values.probes.liveness }}
+          livenessProbe:
+            failureThreshold: {{ .failureThreshold | default 3 }}
+            httpGet:
+              path: {{ .path }}
+              port: {{ $.Values.port }}
+            periodSeconds: {{ .periodSeconds | default 10 }}
+            successThreshold: {{ .successThreshold | default 1 }}
+            timeoutSeconds: {{ .timeoutSeconds | default 1 }}
+            initialDelaySeconds: {{ .initialDelaySeconds | default 10 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.probes.startup }}
+          {{- with .Values.probes.startup }}
+          startupProbe:
+            httpGet:
+              path: {{ .path }}
+              port: {{ $.Values.port }}
+            failureThreshold: {{ .failureThreshold | default 30 }}
+            periodSeconds: {{ .periodSeconds | default 10 }}
+          {{- end }}
+          {{- end }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "app.configmap" . }}
+            -  secretRef:
+                name: {{ include "app.secret" . }}
+...
