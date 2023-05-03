@@ -3,9 +3,9 @@ package app
 import (
 	"context"
 	"errors"
-	"github.com/alexMolokov/hw-otus-microservices/internal/db"
 
 	"github.com/alexMolokov/hw-otus-microservices/internal/api/config"
+	"github.com/alexMolokov/hw-otus-microservices/internal/db"
 	loggerContext "github.com/alexMolokov/hw-otus-microservices/internal/logger/context"
 	"github.com/alexMolokov/hw-otus-microservices/internal/model"
 )
