@@ -1,0 +1,22 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "app.servicemonitor" . }}
+  # Change this to the namespace the Prometheus instance is running in
+  # namespace: default
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Chart.Name }}-{{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-{{ .Release.Name }}
+  endpoints:
+    - port: {{ .Values.portName }}
+      interval: {{ .Values.appMetrics.interval | default "60s" }}
+      scheme: {{ .Values.appMetrics.scheme | default "http" }}
+      path: {{ .Values.appMetrics.path }}
+  namespaceSelector:
+    matchNames:
+      - {{.Release.Namespace}}

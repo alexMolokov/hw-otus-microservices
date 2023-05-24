@@ -2,12 +2,12 @@ package model
 
 type UserCreateRequest struct {
 	UserName string `json:"username" valid:"required~Поле username обязательно для заполнения" example:"alex.molokov"`
-	userCommon
+	UserCommon
 }
 
 type UserUpdateRequest struct {
 	UserID int64
-	userCommon
+	UserCommon
 }
 
 type User struct {
@@ -15,7 +15,7 @@ type User struct {
 	UserCreateRequest
 }
 
-type userCommon struct {
+type UserCommon struct {
 	FirstName *string `json:"firstName" example:"Молоков"`
 	LastName  *string `json:"lastName" example:"Алексей"`
 	Email     *string `json:"email" example:"alex.molokov@yandex.ru"`

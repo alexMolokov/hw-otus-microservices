@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/alexMolokov/hw-otus-microservices/internal/common"
+	fasthttpp "github.com/alexMolokov/hw-otus-microservices/internal/common/prometheus"
 	loggerCtx "github.com/alexMolokov/hw-otus-microservices/internal/logger/context"
 	"github.com/alexMolokov/hw-otus-microservices/internal/model"
 	"github.com/valyala/fasthttp"
@@ -41,9 +42,11 @@ func NewServer(logger loggerCtx.Logger, app Application, addr string) *Server {
 	}
 
 	router := s.NewRouter()
+	prm := fasthttpp.NewWith("", "", "")
+	prm.Register(router)
 
 	s.httpServer = &fasthttp.Server{
-		Handler:      common.AddUserContext(false, s.LoggingRequest(router.Handler)),
+		Handler:      common.AddUserContext(false, s.LoggingRequest(prm.Middleware(router.Handler))),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}

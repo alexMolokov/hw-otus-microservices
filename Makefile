@@ -1,6 +1,7 @@
 -include .env
 RELEASE ?= 0.0.1
 BIN_TEST_API := "./dist/api"
+KUBE_NAMESPACE := "alexmolokov"
 
 # все таргеты, которые не создают новые файлы, должны быть отмечены как PHONY, иначе make вернет в exitcode ошибку
 .PHONY: lint run stop run-test-api save-vendor test integrations-test
@@ -35,3 +36,11 @@ api-swagger:
 save-vendor:
 	go mod tidy
 	go mod vendor
+
+install:
+	helm install otususer ./.helm/user --create-namespace --namespace=$(KUBE_NAMESPACE)
+
+uninstall:
+	helm uninstall otususer --namespace=$(KUBE_NAMESPACE)
+	kubectl delete pvc,pv --all --namespace=$(KUBE_NAMESPACE)
+	kubectl delete namespace $(KUBE_NAMESPACE)

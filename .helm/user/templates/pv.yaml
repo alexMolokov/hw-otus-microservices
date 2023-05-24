@@ -1,0 +1,24 @@
+{{- if .Values.pv}}
+{{range .Values.pv}}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace | quote }}
+  labels:
+    app: {{ $.Chart.Name }}-{{ $.Release.Name }}
+    type: local
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-4"
+spec:
+  storageClassName: {{ .storageClass }}
+  capacity:
+    storage: {{ .size }}
+  accessModes:
+    - {{ .accessMode }}
+  hostPath:
+    path: {{ .path }}
+{{- end }}
+{{- end }}

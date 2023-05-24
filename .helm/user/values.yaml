@@ -1,0 +1,113 @@
+#######################################
+
+# Настройки деплоймента
+# количество реплик приложения
+replicas: 2
+# image приложения
+image:
+  repository: "alexmolokov1311/otus-microservices"
+  tag: "0.5.4"
+
+# порт на котором работает приложение
+port: 8000
+portName: web
+
+# ресурсы выделяемые приложению
+resources:
+  requests:
+    cpu: 10m
+    memory: 100Mi
+  limits:
+    cpu: 100m
+    memory: 100Mi
+
+# стратегия
+strategy:
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+
+probes:
+  readiness:
+    path: "/ready"
+  liveness:
+    path: "/health"
+  startup:
+    path: "/health"
+#######################################
+
+# Настройки  job migration
+migration:
+  image:
+    repository: "alexmolokov1311/otus-ms-migration"
+    tag: "0.0.3"
+
+#######################################
+
+# Настройки ingress
+ingress:
+  className: "nginx"
+  host: "arch.homework"
+  pathType: "Prefix"
+  path: "/"
+  port: 80
+
+#######################################
+
+# Настройки переменные окружения
+env:
+  DB_HOST: "postgresql"
+  DB_PORT: "5432"
+  DB_USER: "alex.molokov"
+  DB_NAME: "otus"
+  DB_SSL: "disable"
+
+envSecret:
+  DB_PASSWORD: otus
+
+#######################################
+# Настройки persistent volume (pv)
+pv:
+  - name: "postgresql-data"
+    size: 10Gi
+    storageClass: "manual"
+    accessMode: "ReadWriteOnce"
+    path: "/data/volume"
+
+#######################################
+# Настройки persistent volume claim (pvc)
+pvc:
+  - name: "postgresql-data-claim"
+    size: 10Gi
+    storageClass: "manual"
+    accessMode: "ReadWriteOnce"
+
+# define default database user, name, and password for PostgreSQL deployment
+postgresql:
+  fullnameOverride: "postgresql"
+  auth:
+    enablePostgresUser: true
+    postgresPassword: "Djdflheu13"
+    username: "alex.molokov"
+    password: "otus"
+    database: "otus"
+
+# The postgres helm chart deployment will be using PVC postgresql-data-claim
+  primary:
+    persistence:
+      enabled: true
+      existingClaim: "postgresql-data-claim"
+
+  volumePermissions:
+    enabled: true
+
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+
+# serviceMonitor app metrics
+appMetrics:
+  interval: 30s
+  path: /metrics

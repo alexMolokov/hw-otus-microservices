@@ -1,0 +1,28 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "app.migration" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app:  {{ .Chart.Name }}-{{ .Release.Name }}
+spec:
+  backoffLimit: {{ .Values.migration.activeDeadlineSeconds | default 0}}
+  activeDeadlineSeconds: {{ .Values.migration.activeDeadlineSeconds | default 120}}
+  template:
+    spec:
+      initContainers:
+        - name: "wait-db"
+          image: "alpine:3.6"
+          command: ["/bin/sh", "-c", "while ! nc -z postgresql 5432; do sleep 1; done;"]
+      containers:
+        - name: {{ .Chart.Name }}-migration
+          {{- with .Values.migration.image}}
+          image: {{ .repository }}:{{.tag}}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "app.configmap" . }}
+            - secretRef:
+                name: {{ include "app.secret" . }}
+      restartPolicy: {{ .Values.migration.restartPolicy | default "Never"}}
